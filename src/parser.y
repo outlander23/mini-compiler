@@ -1,84 +1,74 @@
 %{
-#include "symtab.h"
-#include "ast.h"
-#include "codegen.h"
 #include <stdio.h>
 #include <stdlib.h>
+#define YYSTYPE int
+
+extern int yylex(void);  // Declare the yylex function
+
+void yyerror(const char *s);
 %}
 
-%token NUM ID
+%token NUM
+%token PLUS MINUS MUL DIV
+%token LPAREN RPAREN SEMICOLON
 %token IF ELSE FOR WHILE
-%token ASSIGN
-%token PLUS MINUS TIMES DIVIDE
-%token SEMICOLON
-%token LPAREN RPAREN LBRACE RBRACE
-%token LT GT LE GE EQ NE
 
-%start program
-%type <node> expr stmt program
-
-%% 
+%%
 
 program:
     stmt_list
 ;
 
 stmt_list:
-    stmt_list stmt
-    | /* empty */
+    stmt
+  | stmt_list stmt
 ;
 
 stmt:
-    expr SEMICOLON {
-        $$ = create_expr_node($1);
-        generate_code($$);
-    }
-    | IF LPAREN expr RPAREN stmt ELSE stmt {
-        $$ = create_if_node($3, $5, $7);
-        generate_code($$);
-    }
-    | FOR LPAREN expr SEMICOLON expr SEMICOLON expr RPAREN stmt {
-        $$ = create_for_node($3, $5, $7, $9);
-        generate_code($$);
-    }
-    | WHILE LPAREN expr RPAREN stmt {
-        $$ = create_while_node($3, $5);
-        generate_code($$);
-    }
+    expr SEMICOLON
+        { printf("Arithmetic expression evaluated to: %d\n", $1); }
+  | IF LPAREN expr RPAREN stmt
+        { printf("If statement: condition evaluated to %d\n", $3); }
+  | IF LPAREN expr RPAREN stmt ELSE stmt
+        { printf("If-Else statement: condition evaluated to %d\n", $3); }
+  | WHILE LPAREN expr RPAREN stmt
+        { printf("While loop: condition evaluated to %d\n", $3); }
+  | FOR LPAREN expr SEMICOLON expr SEMICOLON expr RPAREN stmt
+        { printf("For loop: init=%d, condition=%d, update=%d\n", $3, $5, $7); }
 ;
 
 expr:
-    NUM {
-        $$ = create_num_node($1);
-    }
-    | ID {
-        $$ = create_id_node($1);
-    }
-    | expr PLUS expr {
-        $$ = create_binop_node($1, $3, '+');
-    }
-    | expr MINUS expr {
-        $$ = create_binop_node($1, $3, '-');
-    }
-    | expr TIMES expr {
-        $$ = create_binop_node($1, $3, '*');
-    }
-    | expr DIVIDE expr {
-        $$ = create_binop_node($1, $3, '/');
-    }
-    | LPAREN expr RPAREN {
-        $$ = $2;
-    }
+    expr PLUS term
+        { $$ = $1 + $3; printf("Intermediate Code: %d + %d = %d\n", $1, $3, $$); }
+  | expr MINUS term
+        { $$ = $1 - $3; printf("Intermediate Code: %d - %d = %d\n", $1, $3, $$); }
+  | term
+        { $$ = $1; }
 ;
 
-%% 
+term:
+    term MUL factor
+        { $$ = $1 * $3; printf("Intermediate Code: %d * %d = %d\n", $1, $3, $$); }
+  | term DIV factor
+        { $$ = $1 / $3; printf("Intermediate Code: %d / %d = %d\n", $1, $3, $$); }
+  | factor
+        { $$ = $1; }
+;
 
-int yyerror(char *s) {
+factor:
+    NUM
+        { $$ = $1; }
+  | LPAREN expr RPAREN
+        { $$ = $2; }
+;
+%%
+
+void yyerror(const char *s) {
     fprintf(stderr, "Error: %s\n", s);
-    return 0;
 }
 
-int main(int argc, char **argv) {
+int main(void) {
+    printf("Enter your statements (end each with a semicolon):\n");
     yyparse();
     return 0;
 }
