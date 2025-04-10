@@ -1,39 +1,84 @@
 # Mini Compiler for Arithmetic Expressions and Control Statements
 
-This project implements a mini compiler that processes arithmetic expressions and control statements (If-Else, For, While) using Flex and Yacc.
+## Overview
 
-## Project Structure
+This project implements a mini compiler using Flex and Yacc in C. The compiler supports arithmetic expressions and basic control statements such as if-else, for, and while. It evaluates arithmetic expressions, checks the validity of input statements, and simulates intermediate code generation by printing the corresponding steps.
 
-- **src/**: Contains the source code files.
-  - **lexer.l**: Lexical analyzer definitions.
-  - **parser.y**: Grammar rules and parsing logic.
-  - **main.c**: Entry point of the compiler.
-  - **symtab.h**: Header for symbol table management.
-  - **symtab.c**: Implementation of symbol table functions.
-  - **ast.h**: Header for abstract syntax tree structures.
-  - **ast.c**: Implementation of AST manipulation functions.
-  - **codegen.h**: Header for code generation functions.
-  - **codegen.c**: Implementation of code generation logic.
+## Features
 
-- **test/**: Contains test cases for validating compiler functionality.
-  - **arith.txt**: Test cases for arithmetic expressions.
-  - **if_else.txt**: Test cases for if-else statements.
-  - **for.txt**: Test cases for for loops.
-  - **while.txt**: Test cases for while loops.
+- **Arithmetic Expressions:** Supports addition, subtraction, multiplication, and division.
+- **Control Structures:**
+  - **If statements:** Evaluate the condition and execute a statement.
+  - **If-Else statements:** Provide an alternative execution path when the condition is false.
+  - **While loops:** Execute a statement repeatedly while a condition is true.
+  - **For loops:** Initialize, test, and update as part of loop control.
+- **Feedback Messages:** Displays evaluation results and prints simple intermediate code generation messages.
 
-- **Makefile**: Build instructions for compiling the project.
+## Files
 
-## Setup Instructions
+- `scanner.l`: The Flex file specifying the lexical analyzer. It tokenizes the input, recognizes numbers, arithmetic operators, control keywords, and other symbols.
+- `parser.y`: The Yacc file that defines the grammar for the language of arithmetic expressions and control statements. It includes semantic actions to evaluate expressions and display messages.
+- `README.md`: This file.
 
-1. Ensure you have Flex and Yacc installed on your system.
-2. Clone the repository or download the project files.
-3. Navigate to the project directory.
-4. Run `make` to build the project.
+## Prerequisites
 
-## Usage Guidelines
+- **Flex:** For generating the lexical analyzer.
+- **Yacc or Bison:** For generating the parser.
+- **C Compiler:** Such as `gcc` or `cc`.
 
-To run the compiler, execute the compiled binary with a source file containing arithmetic expressions or control statements. The compiler will validate the input, evaluate expressions, and generate intermediate code.
+## Build Instructions
 
-## Testing
+1. Open a terminal and navigate to the project directory.
+2. Generate the lexer using Flex:
+   ```bash
+   flex scanner.l
+   ```
+3. Generate the parser using Yacc (or Bison):
+   ```bash
+   yacc -d parser.y
+   ```
+4. Compile the generated files:
+   ```bash
+   cc lex.yy.c y.tab.c -o mini_compiler
+   ```
 
-Test the compiler using the provided test cases in the `test` directory. Each file contains specific scenarios to validate the functionality of the compiler.
+## Running the Compiler
+
+Start the compiler by running the executable:
+
+```bash
+./mini_compiler
+```
+
+You will be prompted to enter statements. Each statement should end with a semicolon (`;`). For example:
+
+```c
+3+4;
+if(7-2) 3+2;
+if(1) 5+5; else 4+4;
+while(2) 3+3;
+for(1; 2; 3) 1+2;
+```
+
+## Expected Output
+
+- For an arithmetic expression like `3+4;`, you might see:
+  ```
+  Intermediate Code: 3 + 4 = 7
+  Arithmetic expression evaluated to: 7
+  ```
+- For control structures, the output will include the condition value and a description of the structure executed. For example:
+  ```
+  If statement: condition evaluated to 5
+  ```
+
+## Extending the Project
+
+This mini compiler provides a basic framework that you can extend further by:
+
+- Enhancing the grammar to support more complex expressions.
+- Implementing a full symbol table for variables.
+- Generating complete three-address intermediate code.
+- Adding error detection and recovery for invalid statements.
+
+Feel free to contribute and improve the project as needed!
