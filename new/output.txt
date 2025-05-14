@@ -1,0 +1,12 @@
+Enter statements. End each with a semicolon (;).
+Assignment: a = 5
+Assignment: b = 3
+Intermediate: 0 + 1
+Intermediate: 3 + 1
+Assignment: b = 4
+For loop: init; cond=1; update
+Assignment: x = 1
+Assignment: y = 2
+Intermediate: 1 + 2
+Assignment: z = 3
+If statement: condition = 1
